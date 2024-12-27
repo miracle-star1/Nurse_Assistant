@@ -38,12 +38,12 @@ This Rust-based command-line application helps nurses keep track of medication s
 ```bash
 Welcome to the Medication Reminder Tool!
 Enter the patient's name:
-John Doe
+Mercy Miracle
 Enter the hour (24-hour format) for the medication:
 14
 Enter the minute for the medication:
 30
-Reminder set for John Doe at 14:30.
+Reminder set for Mercy Miracle at 14:30.
 Time to give medication to John Doe!
 ```
 
