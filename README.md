@@ -44,7 +44,7 @@ Enter the hour (24-hour format) for the medication:
 Enter the minute for the medication:
 30
 Reminder set for Mercy Miracle at 14:30.
-Time to give medication to John Doe!
+Time to give medication to Mercy Miracle!
 ```
 
 ## Limitations
