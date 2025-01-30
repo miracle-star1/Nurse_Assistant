@@ -1,10 +1,9 @@
-
 name: Release Statically Linked Rust Binary
 
 on:
   push:
     tags:
-      - 'v*'  # Trigger on tags like 'v1.0.0'
+      - 'v*'  # Trigger on version tags like 'v1.0.0'
 
 jobs:
   build:
@@ -28,32 +27,36 @@ jobs:
       - name: Install Cross
         run: cargo install cross
 
-      - name: Install Target for Cross Compilation
-        run: rustup target add ${{ matrix.target }}
+      - name: Verify Cross Installation
+        run: cross --version
 
       - name: Build with Cross
         run: cross build --target ${{ matrix.target }} --release --verbose
 
+      - name: Debug - List Compiled Files
+        run: ls -lah target/${{ matrix.target }}/release/
+
       - name: Create Release Archive
         run: |
           mkdir -p release
+          BINARY_PATH="target/${{ matrix.target }}/release/nurse_assistant"
+
+          if [ ! -f "$BINARY_PATH" ]; then
+            echo "Error: Binary not found at $BINARY_PATH"
+            exit 1
+          fi
+
+          cp "$BINARY_PATH" release/
 
           if [[ "${{ matrix.target }}" == *"windows"* ]]; then
-            cp target/${{ matrix.target }}/release/$BINARY_NAME.exe release/
-            zip -r ${{ matrix.target }}.zip release
-          elif [[ "${{ matrix.target }}" == *"darwin"* ]]; then
-            cp target/${{ matrix.target }}/release/$BINARY_NAME release/
-            tar -czvf ${{ matrix.target }}.tar.gz -C release $BINARY_NAME
+            zip -r "release/${{ matrix.target }}.zip" release
           else
-            cp target/${{ matrix.target }}/release/$BINARY_NAME release/
-            tar -czvf ${{ matrix.target }}.tar.gz -C release $BINARY_NAME
+            tar -czvf "release/${{ matrix.target }}.tar.gz" -C release nurse_assistant
           fi
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            *.tar.gz
-            *.zip
+          files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.NA }}
